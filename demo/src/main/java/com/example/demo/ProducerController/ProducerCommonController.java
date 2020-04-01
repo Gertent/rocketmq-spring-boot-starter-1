@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.ProducerController;
 
 import com.github.thierrysquirrel.annotation.CommonMessage;
 import com.github.thierrysquirrel.annotation.RocketMessage;
@@ -11,21 +11,23 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RocketMessage(groupID = "GID_common")
-public class ProducerCommon {
+public class ProducerCommonController {
 
     @GetMapping("/commonA")
-    @CommonMessage(topic = "commonA", tag = "commonA",messageSendType = MessageSendType.SEND)
+    @CommonMessage(topic = "topicCommonA", tag = "tagCommonA",messageSendType = MessageSendType.SEND)
     public String sendCommonMsg() {
-        return "commonA";
+        return "send commonA message";
     }
     @GetMapping("/commonB")
-    @CommonMessage(topic = "commonB", tag = "commonB",messageSendType = MessageSendType.SEND_ASYNC)
+    @CommonMessage(topic = "topicCommonB", tag = "tagCommonB",messageSendType = MessageSendType.SEND_ASYNC, callback = ProducerSendCallback.class)
     public String sendAsyncMsg() {
-        return "commonB";
+        return "send commonB message";
     }
     @GetMapping("/commonC")
-    @CommonMessage(topic = "commonC", tag = "commonC",messageSendType = MessageSendType.SEND_ONE_WAY)
+    @CommonMessage(topic = "topicCommonC", tag = "tagCommonC",messageSendType = MessageSendType.SEND_ONE_WAY)
     public String sendOneWayMessage() {
-        return "commonC";
+        return "send commonC message";
     }
+
+
 }

@@ -26,6 +26,7 @@ import com.github.thierrysquirrel.core.factory.execution.ThreadPoolExecutorExecu
 import com.github.thierrysquirrel.core.utils.AnnotatedMethodsUtils;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -44,11 +45,17 @@ public class RocketConsumerStrategy {
 
 	public static void putProducer(ThreadPoolExecutor threadPoolExecutor, Map<String, Object> producerConsumer, Object bean, RocketProperties rocketProperties, ApplicationContext applicationContext) {
 		RocketMessage rocketMessage = bean.getClass().getAnnotation(RocketMessage.class);
-		AnnotatedMethodsUtils.getMethodAndAnnotation(bean, CommonMessage.class).
-				forEach((method, commonMessage) -> {
+		//获取该生产者类所有发送消息的方法
+		Map<Method, CommonMessage> methodAndAnnotationMap = AnnotatedMethodsUtils.getMethodAndAnnotation(bean, CommonMessage.class);
+		methodAndAnnotationMap.forEach((method, commonMessage) -> {
 					ProducerFactoryExecution producerFactoryExecution = new ProducerFactoryExecution(producerConsumer, rocketMessage, commonMessage, rocketProperties, applicationContext);
 					ThreadPoolExecutorExecution.statsThread(threadPoolExecutor, producerFactoryExecution);
 				});
+//		AnnotatedMethodsUtils.getMethodAndAnnotation(bean, CommonMessage.class).
+//				forEach((method, commonMessage) -> {
+//					ProducerFactoryExecution producerFactoryExecution = new ProducerFactoryExecution(producerConsumer, rocketMessage, commonMessage, rocketProperties, applicationContext);
+//					ThreadPoolExecutorExecution.statsThread(threadPoolExecutor, producerFactoryExecution);
+//				});
 		AnnotatedMethodsUtils.getMethodAndAnnotation(bean, OrderMessage.class).
 				forEach((method, orderMessage) -> {
 					ProducerFactoryExecution producerFactoryExecution = new ProducerFactoryExecution(producerConsumer, rocketMessage, orderMessage, rocketProperties, applicationContext);

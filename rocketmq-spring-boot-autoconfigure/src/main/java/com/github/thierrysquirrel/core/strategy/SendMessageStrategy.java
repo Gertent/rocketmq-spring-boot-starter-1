@@ -18,6 +18,7 @@ package com.github.thierrysquirrel.core.strategy;
 
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.Producer;
+import com.aliyun.openservices.ons.api.SendResult;
 import com.github.thierrysquirrel.annotation.CommonMessage;
 import com.github.thierrysquirrel.core.producer.MessageSendType;
 import com.github.thierrysquirrel.core.utils.ApplicationContextUtils;
@@ -38,7 +39,8 @@ public class SendMessageStrategy {
 
 	public static void send(CommonMessage commonMessage, Producer producer, Message message, ApplicationContext applicationContext) {
 		if (commonMessage.messageSendType().equals(MessageSendType.SEND)) {
-			producer.send(message);
+			SendResult sendResult = producer.send(message);
+			System.out.println("同步发送成功：" + sendResult.toString());
 			return;
 		}
 		if (commonMessage.messageSendType().equals(MessageSendType.SEND_ASYNC)) {

@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.Consumer;
 
 import com.aliyun.openservices.ons.api.PropertyValueConst;
 import com.github.thierrysquirrel.annotation.CommonMessage;
@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by wangyunfu on 2020/3/23.
  */
 @RocketListener(groupID = "GID_message",messageModel = PropertyValueConst.CLUSTERING)
-public class ConsumerCommon {
+public class ConsumerCommonController {
 
 
     @MessageListener(topic = "commonB",tag = "*")
     public void delayed(String message) {
-        System.out.println(message + "**************************");
-        System.out.println("message");
+        System.out.println("收到消息：" + message + "**************************");
     }
 }

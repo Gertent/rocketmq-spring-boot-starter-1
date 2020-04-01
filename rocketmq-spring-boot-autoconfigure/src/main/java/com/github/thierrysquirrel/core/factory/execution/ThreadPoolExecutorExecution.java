@@ -32,5 +32,6 @@ public class ThreadPoolExecutorExecution {
 
 	public static void statsThread(ThreadPoolExecutor threadPoolExecutor, Runnable runnable) {
 		threadPoolExecutor.execute(runnable);
+//		runnable.run();
 	}
 }

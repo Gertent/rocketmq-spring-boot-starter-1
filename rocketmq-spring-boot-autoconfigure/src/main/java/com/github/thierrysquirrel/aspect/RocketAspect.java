@@ -78,14 +78,21 @@ public class RocketAspect implements ApplicationContextAware {
 
 	@Around("commonMessagePointcut()")
 	public Object rockerMessageSend(ProceedingJoinPoint point) throws Throwable {
-		return InterceptRocket.intercept(
-				StartDeliverTimeFactory.getStartDeliverTime(point.getArgs(),AspectUtils.getParams(point)),
-				AspectUtils.getDeclaringClassAnnotation(point, RocketMessage.class),
-				AspectUtils.getAnnotation(point, CommonMessage.class),
-				point.proceed(),
-				consumerContainer,
-				threadPoolExecutor,
-				applicationContext);
+
+		Long startDeliverTime = StartDeliverTimeFactory.getStartDeliverTime(point.getArgs(), AspectUtils.getParams(point));
+		RocketMessage rocketMessage = AspectUtils.getDeclaringClassAnnotation(point, RocketMessage.class);
+		CommonMessage commonMessage = AspectUtils.getAnnotation(point, CommonMessage.class);
+		Object proceedMessage = point.proceed();
+		Object object = InterceptRocket.intercept(startDeliverTime,rocketMessage,commonMessage,proceedMessage,consumerContainer,threadPoolExecutor,applicationContext);
+		return object;
+//		return InterceptRocket.intercept(
+//				StartDeliverTimeFactory.getStartDeliverTime(point.getArgs(),AspectUtils.getParams(point)),
+//				AspectUtils.getDeclaringClassAnnotation(point, RocketMessage.class),
+//				AspectUtils.getAnnotation(point, CommonMessage.class),
+//				point.proceed(),
+//				consumerContainer,
+//				threadPoolExecutor,
+//				applicationContext);
 	}
 
 	@Around("orderMessagePointcut()")

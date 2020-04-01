@@ -30,6 +30,8 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -56,16 +58,27 @@ public class RocketConsumerContainer implements ApplicationContextAware {
 
 
 		ThreadPoolExecutor threadPoolExecutor = ThreadPoolFactory.createConsumeThreadPoolExecutor(rocketProperties);
-
-		applicationContext.getBeansWithAnnotation(RocketListener.class).forEach((beanName, bean) -> {
+		Map<String, Object> map = applicationContext.getBeansWithAnnotation(RocketListener.class);
+		map.forEach((beanName, bean) -> {
 			RocketListener rocketListener = bean.getClass().getAnnotation(RocketListener.class);
-			AnnotatedMethodsUtils.getMethodAndAnnotation(bean, MessageListener.class).
-					forEach((method, consumerListener) -> {
+			Map<Method, MessageListener> methodAndAnnotation = AnnotatedMethodsUtils.getMethodAndAnnotation(bean, MessageListener.class);
+			methodAndAnnotation.forEach((method, consumerListener) -> {
 						ConsumerFactoryExecution consumerFactoryExecution = new ConsumerFactoryExecution(rocketProperties,
 								rocketListener, consumerListener, new MethodFactoryExecution(bean, method, mqSerializer));
 						ThreadPoolExecutorExecution.statsThread(threadPoolExecutor, consumerFactoryExecution);
 					});
 		});
+
+
+//		applicationContext.getBeansWithAnnotation(RocketListener.class).forEach((beanName, bean) -> {
+//			RocketListener rocketListener = bean.getClass().getAnnotation(RocketListener.class);
+//			AnnotatedMethodsUtils.getMethodAndAnnotation(bean, MessageListener.class).
+//					forEach((method, consumerListener) -> {
+//						ConsumerFactoryExecution consumerFactoryExecution = new ConsumerFactoryExecution(rocketProperties,
+//								rocketListener, consumerListener, new MethodFactoryExecution(bean, method, mqSerializer));
+//						ThreadPoolExecutorExecution.statsThread(threadPoolExecutor, consumerFactoryExecution);
+//					});
+//		});
 
 		threadPoolExecutor.shutdown();
 	}

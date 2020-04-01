@@ -50,7 +50,7 @@ public class DefaultMessageListener extends AbstractRocketListener implements Me
      */
     @Override
     public Action consume(Message message, ConsumeContext context) {
-        log.info (">>>>message:{}>>>>", message);
+        log.info ("开始消费>>>>message:{}>>>>", message);
         try {
             super.getMethodFactoryExecution ().methodExecution (message.getBody ());
         } catch (RocketException e) {

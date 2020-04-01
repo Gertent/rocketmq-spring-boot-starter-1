@@ -42,15 +42,24 @@ public class RocketProducerContainer implements ApplicationContextAware {
 	private Map<String, Object> consumerContainer;
 
 	public RocketProducerContainer(Map<String, Object> consumerContainer, RocketProperties rocketProperties) {
+		System.out.println("ProducerContainer生产者容器实例化......");
 		this.consumerContainer = consumerContainer;
 		this.rocketProperties = rocketProperties;
 	}
 
 	@PostConstruct
 	public void initialize() {
+		System.out.println("ProducerContainer生产者容器初始化before......");
 		ThreadPoolExecutor threadPoolExecutor = ThreadPoolFactory.createProducerThreadPoolExecutor(rocketProperties);
-		applicationContext.getBeansWithAnnotation(RocketMessage.class).forEach((beanName, bean) -> RocketConsumerStrategy.putProducer(threadPoolExecutor, consumerContainer, bean, rocketProperties, applicationContext));
+		//获取标记为生产者的类
+		Map<String, Object> map = applicationContext.getBeansWithAnnotation(RocketMessage.class);
+		//遍历生产者类中发送消息的方法
+		map.forEach((beanName, bean) -> RocketConsumerStrategy.putProducer(threadPoolExecutor, consumerContainer, bean, rocketProperties, applicationContext));
 		threadPoolExecutor.shutdown();
+
+
+//		applicationContext.getBeansWithAnnotation(RocketMessage.class).forEach((beanName, bean) -> RocketConsumerStrategy.putProducer(threadPoolExecutor, consumerContainer, bean, rocketProperties, applicationContext));
+//		threadPoolExecutor.shutdown();
 	}
 
 
